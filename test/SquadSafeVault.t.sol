@@ -5,6 +5,50 @@ import "forge-std/Test.sol";
 import "src/SquadSafeVault.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
+// --- ERC20 Mock for Testing ---
+contract ERC20Mock is IERC20 {
+    string public name = "MockToken";
+    string public symbol = "MTK";
+    uint8 public decimals = 18;
+    uint256 public totalSupply;
+    mapping(address => uint256) public balanceOf;
+    mapping(address => mapping(address => uint256)) public allowance;
+
+    function mint(address to, uint256 amount) public {
+        balanceOf[to] += amount;
+        totalSupply += amount;
+        emit Transfer(address(0), to, amount);
+    }
+
+    function transfer(address to, uint256 amount) public returns (bool) {
+        require(balanceOf[msg.sender] >= amount, "Insufficient");
+        balanceOf[msg.sender] -= amount;
+        balanceOf[to] += amount;
+        emit Transfer(msg.sender, to, amount);
+        return true;
+    }
+
+    function approve(address spender, uint256 amount) public returns (bool) {
+        allowance[msg.sender][spender] = amount;
+        emit Approval(msg.sender, spender, amount);
+        return true;
+    }
+
+    function transferFrom(
+        address from,
+        address to,
+        uint256 amount
+    ) public returns (bool) {
+        require(balanceOf[from] >= amount, "Insufficient");
+        require(allowance[from][msg.sender] >= amount, "Not allowed");
+        balanceOf[from] -= amount;
+        balanceOf[to] += amount;
+        allowance[from][msg.sender] -= amount;
+        emit Transfer(from, to, amount);
+        return true;
+    }
+}
+
 contract SquadSafeVaultTest is Test {
     SquadSafeVault vault;
     address alice = address(0xA1);
@@ -22,7 +66,7 @@ contract SquadSafeVaultTest is Test {
         members[0] = alice;
         members[1] = bob;
         members[2] = carol;
-        vault = new SquadSafeVault(members, minVotes);
+        vault = new SquadSafeVault(members, minVotes, alice);
         token = new ERC20Mock();
         // Fund members with ETH and tokens
         vm.deal(alice, 10 ether);
@@ -53,7 +97,12 @@ contract SquadSafeVaultTest is Test {
         vault.depositETH{value: 2 ether}();
         // Alice proposes payment
         vm.prank(alice);
-        uint256 pid = vault.propose(address(0), 1 ether, recipient, "Pay for hotel");
+        uint256 pid = vault.propose(
+            address(0),
+            1 ether,
+            recipient,
+            "Pay for hotel"
+        );
         // Bob votes for
         vm.prank(bob);
         vault.vote(pid, true);
@@ -77,7 +126,12 @@ contract SquadSafeVaultTest is Test {
         vm.stopPrank();
         // Alice proposes payment
         vm.prank(alice);
-        uint256 pid = vault.propose(address(token), 50 ether, recipient, "Pay for dinner");
+        uint256 pid = vault.propose(
+            address(token),
+            50 ether,
+            recipient,
+            "Pay for dinner"
+        );
         // Bob votes for
         vm.prank(bob);
         vault.vote(pid, true);
@@ -139,44 +193,4 @@ contract SquadSafeVaultTest is Test {
         vm.prank(alice);
         vault.execute(pid);
     }
-
-    // --- ERC20 Mock for Testing ---
-    contract ERC20Mock is IERC20 {
-        string public name = "MockToken";
-        string public symbol = "MTK";
-        uint8 public decimals = 18;
-        uint256 public totalSupply;
-        mapping(address => uint256) public balanceOf;
-        mapping(address => mapping(address => uint256)) public allowance;
-
-        function mint(address to, uint256 amount) public {
-            balanceOf[to] += amount;
-            totalSupply += amount;
-            emit Transfer(address(0), to, amount);
-        }
-
-        function transfer(address to, uint256 amount) public returns (bool) {
-            require(balanceOf[msg.sender] >= amount, "Insufficient");
-            balanceOf[msg.sender] -= amount;
-            balanceOf[to] += amount;
-            emit Transfer(msg.sender, to, amount);
-            return true;
-        }
-
-        function approve(address spender, uint256 amount) public returns (bool) {
-            allowance[msg.sender][spender] = amount;
-            emit Approval(msg.sender, spender, amount);
-            return true;
-        }
-
-        function transferFrom(address from, address to, uint256 amount) public returns (bool) {
-            require(balanceOf[from] >= amount, "Insufficient");
-            require(allowance[from][msg.sender] >= amount, "Not allowed");
-            balanceOf[from] -= amount;
-            balanceOf[to] += amount;
-            allowance[from][msg.sender] -= amount;
-            emit Transfer(from, to, amount);
-            return true;
-        }
-    }
-} 
+}

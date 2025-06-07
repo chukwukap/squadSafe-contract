@@ -61,7 +61,14 @@ contract SquadSafeVault is Ownable, ReentrancyGuard {
     }
 
     // --- Constructor ---
-    constructor(address[] memory _members, uint256 _minVotes) {
+    /// @param _members The initial group members
+    /// @param _minVotes The minimum votes required for execution
+    /// @param initialOwner The initial contract owner (for OpenZeppelin 5.x)
+    constructor(
+        address[] memory _members,
+        uint256 _minVotes,
+        address initialOwner
+    ) Ownable(initialOwner) {
         require(_members.length > 0, "No members");
         for (uint256 i = 0; i < _members.length; i++) {
             isMember[_members[i]] = true;
