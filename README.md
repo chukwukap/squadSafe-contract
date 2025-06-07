@@ -1,66 +1,65 @@
-## Foundry
+# SquadSafe Contracts (Foundry)
 
-**Foundry is a blazing fast, portable and modular toolkit for Ethereum application development written in Rust.**
+## Overview
+This Foundry project contains the smart contracts for SquadSafe, the onchain group vault and social finance agent built for the Base Batch Messaging Buildathon. All contracts are designed for security, composability, and seamless integration with XMTP agents and the Base L2 network.
 
-Foundry consists of:
+## Key Features
+- **Group Vault:** Multi-sig, programmable vault for group funds (ETH, USDC, ERC-20)
+- **Proposal & Voting:** Onchain governance for group payments, investments, and actions
+- **Execution:** Secure, auditable payment and DeFi actions
+- **Security:** Built with OpenZeppelin libraries, multi-sig, and modern best practices
+- **Compliance:** Designed for OFAC screening and robust error handling
 
--   **Forge**: Ethereum testing framework (like Truffle, Hardhat and DappTools).
--   **Cast**: Swiss army knife for interacting with EVM smart contracts, sending transactions and getting chain data.
--   **Anvil**: Local Ethereum node, akin to Ganache, Hardhat Network.
--   **Chisel**: Fast, utilitarian, and verbose solidity REPL.
+## Modern Best Practices
+- Built with [Foundry](https://getfoundry.sh/) for fast, reliable Solidity development
+- Uses [OpenZeppelin](https://openzeppelin.com/contracts/) for secure, audited contract modules
+- Modular, upgradeable architecture (proxy pattern ready)
+- Comprehensive tests in `/test` using forge-std
+- Fuzzing and invariant testing for security
+- Gas optimization and Base L2 compatibility
 
-## Documentation
+## Getting Started
 
-https://book.getfoundry.sh/
+### 1. Install Foundry
+See: https://getfoundry.sh/introduction/installation
 
-## Usage
-
-### Build
-
-```shell
-$ forge build
+```
+curl -L https://foundry.paradigm.xyz | bash
+foundryup
 ```
 
-### Test
-
-```shell
-$ forge test
+### 2. Build Contracts
+```
+forge build
 ```
 
-### Format
-
-```shell
-$ forge fmt
+### 3. Run Tests
+```
+forge test
 ```
 
-### Gas Snapshots
+### 4. Deploy
+Use `forge script` or your preferred deployment tool. (Deployment scripts will be added in `/script`.)
 
-```shell
-$ forge snapshot
+### 5. Lint & Format
+```
+forge fmt
 ```
 
-### Anvil
+## Directory Structure
+- `src/` - Main contract sources
+- `test/` - Test contracts
+- `script/` - Deployment and management scripts
+- `lib/` - External libraries (e.g., OpenZeppelin, forge-std)
 
-```shell
-$ anvil
-```
+## Security
+- All contracts use OpenZeppelin modules for ERC-20, multi-sig, and access control
+- Re-entrancy protection, input validation, and event logging
+- Designed for auditability and upgradeability
 
-### Deploy
+## License
+MIT
 
-```shell
-$ forge script script/Counter.s.sol:CounterScript --rpc-url <your_rpc_url> --private-key <your_private_key>
-```
+---
 
-### Cast
-
-```shell
-$ cast <subcommand>
-```
-
-### Help
-
-```shell
-$ forge --help
-$ anvil --help
-$ cast --help
-```
+**This project is the onchain foundation for SquadSafe, optimized for security, composability, and a winning buildathon submission.**
