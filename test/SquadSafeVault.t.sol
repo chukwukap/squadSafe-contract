@@ -4,6 +4,7 @@ pragma solidity ^0.8.20;
 import "forge-std/Test.sol";
 import "src/SquadSafeVault.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 
 contract ERC20Mock is IERC20 {
     string public name = "MockToken";
@@ -182,7 +183,12 @@ contract SquadSafeVaultTest is Test {
     function testAddMemberNotOwnerReverts() public {
         address newGuy = address(0xE6);
         vm.prank(bob);
-        vm.expectRevert("Ownable: caller is not the owner");
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                Ownable.OwnableUnauthorizedAccount.selector,
+                bob
+            )
+        );
         vault.addMember(newGuy);
     }
 
@@ -206,7 +212,12 @@ contract SquadSafeVaultTest is Test {
 
     function testRemoveMemberNotOwnerReverts() public {
         vm.prank(bob);
-        vm.expectRevert("Ownable: caller is not the owner");
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                Ownable.OwnableUnauthorizedAccount.selector,
+                bob
+            )
+        );
         vault.removeMember(carol);
     }
 
@@ -233,7 +244,12 @@ contract SquadSafeVaultTest is Test {
 
     function testSetVotingPeriodNotOwnerReverts() public {
         vm.prank(bob);
-        vm.expectRevert("Ownable: caller is not the owner");
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                Ownable.OwnableUnauthorizedAccount.selector,
+                bob
+            )
+        );
         vault.setVotingPeriod(2 days);
     }
 
@@ -244,7 +260,12 @@ contract SquadSafeVaultTest is Test {
 
     function testSetMinVotesNotOwnerReverts() public {
         vm.prank(bob);
-        vm.expectRevert("Ownable: caller is not the owner");
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                Ownable.OwnableUnauthorizedAccount.selector,
+                bob
+            )
+        );
         vault.setMinVotes(3);
     }
 
