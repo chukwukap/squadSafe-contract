@@ -298,4 +298,11 @@ contract SquadSafeVaultTest is Test {
         assertEq(m[1], bob);
         assertEq(m[2], carol);
     }
+
+    function testOnlyMemberModifierReverts() public {
+        address outsider = address(0xE8);
+        vm.expectRevert();
+        vm.prank(outsider);
+        vault.propose(address(0), 1 ether, address(0xD9), "Should revert");
+    }
 }
