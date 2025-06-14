@@ -66,7 +66,10 @@ contract SquadSafeVaultTest is Test {
         members[0] = alice;
         members[1] = bob;
         members[2] = carol;
-        vault = new SquadSafeVault(members, minVotes, alice);
+        vault = new SquadSafeVault(minVotes, alice);
+        vault.addMember(alice);
+        vault.addMember(bob);
+        vault.addMember(carol);
         token = new ERC20Mock();
         // Fund members with ETH and tokens
         vm.deal(alice, 10 ether);

@@ -32,6 +32,8 @@ contract SquadSafeVault is Ownable, ReentrancyGuard {
         uint256 indexed proposalId,
         address indexed executor
     );
+    event MemberAdded(address indexed newMember);
+    event MemberRemoved(address indexed removedMember);
 
     // --- Structs ---
     struct Proposal {
@@ -61,19 +63,9 @@ contract SquadSafeVault is Ownable, ReentrancyGuard {
     }
 
     // --- Constructor ---
-    /// @param _members The initial group members
     /// @param _minVotes The minimum votes required for execution
     /// @param initialOwner The initial contract owner (for OpenZeppelin 5.x)
-    constructor(
-        address[] memory _members,
-        uint256 _minVotes,
-        address initialOwner
-    ) Ownable(initialOwner) {
-        require(_members.length > 0, "No members");
-        for (uint256 i = 0; i < _members.length; i++) {
-            isMember[_members[i]] = true;
-            members.push(_members[i]);
-        }
+    constructor(uint256 _minVotes, address initialOwner) Ownable(initialOwner) {
         minVotes = _minVotes;
     }
 
@@ -182,6 +174,33 @@ contract SquadSafeVault is Ownable, ReentrancyGuard {
 
     function setMinVotes(uint256 _minVotes) external onlyOwner {
         minVotes = _minVotes;
+    }
+
+    /// @notice Add a new member to the group (onlyOwner)
+    /// @param newMember The address to add
+    function addMember(address newMember) external onlyOwner {
+        require(newMember != address(0), "Invalid address");
+        require(!isMember[newMember], "Already a member");
+        isMember[newMember] = true;
+        members.push(newMember);
+        emit MemberAdded(newMember);
+    }
+
+    /// @notice Remove a member from the group (onlyOwner)
+    /// @param member The address to remove
+    function removeMember(address member) external onlyOwner {
+        require(isMember[member], "Not a member");
+        require(members.length > 1, "Cannot remove last member");
+        isMember[member] = false;
+        // Remove from array
+        for (uint256 i = 0; i < members.length; i++) {
+            if (members[i] == member) {
+                members[i] = members[members.length - 1];
+                members.pop();
+                break;
+            }
+        }
+        emit MemberRemoved(member);
     }
 
     // --- TODOs for Advanced Features ---
