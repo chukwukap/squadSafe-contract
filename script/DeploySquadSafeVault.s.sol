@@ -64,7 +64,7 @@ contract DeploySquadSafeVault is Script {
     function run() public {
         // --- Hardcoded values for local/test deployment ---
         uint256 minVotes = 2;
-        address owner = 0xA100000000000000000000000000000000000001;
+        address owner = 0xa100000000000000000000000000000000000001;
         // --- End hardcoded values ---
 
         vm.startBroadcast();
