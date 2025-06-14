@@ -74,3 +74,27 @@ MIT
 ---
 
 **This project is the onchain foundation for SquadSafe, optimized for security, composability, and a winning buildathon submission.**
+
+## Deploying the Test Token (TTK)
+
+A simple ERC-20 token (`TestToken`) is provided for testing and demo purposes. You can deploy it and mint tokens to yourself and/or the SquadSafeVault.
+
+### Deploy TestToken and Mint to Deployer
+
+```
+forge script script/DeployTestToken.s.sol --rpc-url <RPC_URL> --private-key <PRIVATE_KEY> --broadcast
+```
+
+### Optionally Mint to the Vault
+
+Set the `VAULT_ADDRESS` environment variable to mint tokens directly to your deployed vault:
+
+```
+export VAULT_ADDRESS=<YOUR_VAULT_ADDRESS>
+forge script script/DeployTestToken.s.sol --rpc-url <RPC_URL> --private-key <PRIVATE_KEY> --broadcast
+```
+
+- The deployer receives 1,000,000 TTK by default.
+- The vault (if specified) receives 100,000 TTK.
+
+> **Security Note:** The test token is for demo/testing only. Minting is restricted to the deployer.
